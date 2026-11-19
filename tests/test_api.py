@@ -12,10 +12,21 @@ from app.models.action_log import ActionLog
 from app.models.pending import PendingAction
 
 
-# Test SQLite database engine
+from sqlalchemy.pool import StaticPool
+
+# Test SQLite database engine with multi-threading and StaticPool for FastAPI TestClient
 SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL,
+    connect_args={"check_same_thread": False},
+    poolclass=StaticPool
+)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+@pytest.fixture(autouse=True)
+def mock_lifespan_init_db(monkeypatch):
+    monkeypatch.setattr("app.main.init_db", lambda: None)
 
 
 @pytest.fixture

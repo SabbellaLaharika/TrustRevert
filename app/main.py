@@ -7,11 +7,12 @@ from app.api import api_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Auto-initialize database tables and default trust scores on startup
-    try:
-        init_db()
-    except Exception as e:
-        print(f"Warning: Database initialization postponed: {e}")
+    # Auto-initialize database tables and default trust scores on startup (skip in test mode)
+    if not settings.TESTING:
+        try:
+            init_db()
+        except Exception as e:
+            print(f"Warning: Database initialization postponed: {e}")
     yield
 
 

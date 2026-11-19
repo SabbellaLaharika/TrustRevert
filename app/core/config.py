@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     TRUST_THRESHOLD: int = 3
     API_PORT: int = 8000
     MOCK_LLM_ENABLED: bool = True
+    TESTING: bool = False
 
     model_config = SettingsConfigDict(
         env_file=".env",
