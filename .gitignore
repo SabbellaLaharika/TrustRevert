@@ -15,3 +15,5 @@ dist/
 htmlcov/
 .DS_Store
 *.log
+*.db
+*.sqlite
