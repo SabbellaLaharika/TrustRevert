@@ -1,4 +1,7 @@
+import json
+import os
 import uuid
+from datetime import datetime, timezone
 from typing import Dict, Any
 from sqlalchemy.orm import Session
 
@@ -9,6 +12,14 @@ from app.models.pending import PendingAction
 from app.schemas.tools import ToolCallIntent
 from app.services.reversible import execute_with_reversible_log
 from app.services.mutations import get_mutation_func
+
+def append_trace(trace_data: Dict[str, Any]) -> None:
+    """Appends execution trace to traces.jsonl for replayability and auditability."""
+    try:
+        with open(settings.TRACES_FILE, "a", encoding="utf-8") as f:
+            f.write(json.dumps(trace_data, default=str) + "\n")
+    except Exception:
+        pass
 
 
 def get_or_create_trust_record(db_session: Session, action_type: str) -> TrustStore:
@@ -55,6 +66,20 @@ def process_agent_intent(intent: ToolCallIntent, db_session: Session) -> Dict[st
             target_id=intent.target_id,
             mutation_func=lambda tid: mutation_func(db_session, tid)
         )
+        append_trace({
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "target_id": intent.target_id,
+            "action": action_type,
+            "validated_payload": intent.model_dump(),
+            "guardrail_checks": {
+                "id_exists": True,
+                "trust_threshold_passed": True,
+                "trust_score": trust_record.success_count,
+                "threshold": settings.TRUST_THRESHOLD,
+            },
+            "outcome": "executed_autonomously",
+            "action_id": log_entry.action_id,
+        })
         return {
             "status": "executed",
             "message": f"Action '{action_type}' executed autonomously (trust level: {trust_record.success_count}/{settings.TRUST_THRESHOLD}).",
@@ -75,6 +100,21 @@ def process_agent_intent(intent: ToolCallIntent, db_session: Session) -> Dict[st
         db_session.add(pending)
         db_session.commit()
         db_session.refresh(pending)
+
+        append_trace({
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "target_id": intent.target_id,
+            "action": action_type,
+            "validated_payload": intent.model_dump(),
+            "guardrail_checks": {
+                "id_exists": True,
+                "trust_threshold_passed": False,
+                "trust_score": trust_record.success_count,
+                "threshold": settings.TRUST_THRESHOLD,
+            },
+            "outcome": "paused_pending_hitl",
+            "intent_id": pending.intent_id,
+        })
 
         return {
             "status": "paused",

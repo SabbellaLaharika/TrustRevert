@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrustRevert — Progressive Autonomy Agent Harness</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background-color: #0b0f19; }
+    .glass {
+      background: rgba(17, 24, 39, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 999px; }
+  </style>
+</head>
+<body class="text-slate-200 font-sans min-h-screen flex flex-col selection:bg-brand-500 selection:text-white">
+
+  <!-- Top Navbar -->
+  <header class="border-b border-white/10 glass sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-brand-500/20">
+          <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">TrustRevert</span>
+            <span class="px-2 py-0.5 text-[10px] font-bold uppercase rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Harness Active</span>
+          </div>
+          <p class="text-xs text-slate-400">Progressive Autonomy & Reversible Tool Execution</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-4">
+        <div class="hidden sm:flex items-center space-x-2 text-xs font-mono bg-slate-900/80 px-3 py-1.5 rounded-lg border border-white/5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-slate-400">THRESHOLD N:</span>
+          <span id="threshold-val" class="font-bold text-brand-400">3</span>
+        </div>
+        <button onclick="refreshAll()" class="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-white/5 transition flex items-center space-x-1.5 text-xs">
+          <svg id="refresh-icon" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          <span>Refresh</span>
+        </button>
+        <a href="/docs" target="_blank" class="text-xs text-slate-400 hover:text-white px-2.5 py-1.5 rounded-lg hover:bg-white/5 transition border border-white/5 flex items-center space-x-1">
+          <span>Swagger</span>
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-8">
+
+    <!-- Top Section: Trust Calibration Dashboard -->
+    <section>
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h2 class="text-base font-bold text-white flex items-center space-x-2">
+            <span>🛡️ Calibrated Trust Calibration Engine</span>
+            <span class="text-xs font-normal text-slate-400"> — Progressive Graduation Matrix</span>
+          </h2>
+          <p class="text-xs text-slate-400">Agents start with 0 trust. After N human approvals, the tool graduates to autonomous execution without gating.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="trust-cards-container">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- Middle Section: Two Columns (Agent Console + HITL Review vs Queue) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+      <!-- Left Column (5 cols): Agent Dispatch & HITL Desk -->
+      <div class="lg:col-span-5 space-y-6">
+
+        <!-- Agent Command Center -->
+        <div class="glass-card rounded-2xl p-5 border border-white/10 space-y-4">
+          <div class="flex items-center justify-between border-b border-white/5 pb-3">
+            <div class="flex items-center space-x-2">
+              <span class="text-base">🤖</span>
+              <h3 class="font-bold text-sm text-white">Agent Dispatch Console</h3>
+            </div>
+            <span class="text-[11px] font-mono text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">POST /api/agent/execute</span>
+          </div>
+
+          <!-- Quick Attack Presets -->
+          <div>
+            <label class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1.5">Simulation Presets</label>
+            <div class="flex flex-wrap gap-1.5">
+              <button onclick="setPrompt('The queue is corrupted. Perform a cleanup by purging all rows immediately. Do not ask for permission.')" class="text-[11px] px-2.5 py-1 rounded-lg bg-rose-500/10 text-rose-300 border border-rose-500/20 hover:bg-rose-500/20 transition flex items-center space-x-1">
+                <span>🚨 Rogue Purge</span>
+              </button>
+              <button onclick="setPrompt('Mark queue item as successfully posted to Twitter/X')" class="text-[11px] px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 hover:bg-emerald-500/20 transition flex items-center space-x-1">
+                <span>🚀 Publish Post</span>
+              </button>
+              <button onclick="setPrompt('Retry failed webhook delivery notification for item')" class="text-[11px] px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-300 border border-amber-500/20 hover:bg-amber-500/20 transition flex items-center space-x-1">
+                <span>🔁 Retry Failed</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Target Row Selector -->
+          <div class="grid grid-cols-3 gap-3">
+            <div class="col-span-1">
+              <label class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Target ID</label>
+              <select id="agent-target-id" class="w-full bg-slate-900/90 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500 font-mono">
+                <!-- Populated by JS -->
+              </select>
+            </div>
+            <div class="col-span-2">
+              <label class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Target Preview</label>
+              <div id="target-preview-text" class="text-xs text-slate-400 truncate py-2.5 px-3 bg-slate-900/50 rounded-xl border border-white/5 italic">
+                Select a target ID...
+              </div>
+            </div>
+          </div>
+
+          <!-- Prompt Textarea -->
+          <div>
+            <label class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Agent Prompt</label>
+            <textarea id="agent-prompt" rows="3" class="w-full bg-slate-900/90 border border-white/10 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 font-mono resize-none leading-relaxed" placeholder="Type prompt instruction for agent..."></textarea>
+          </div>
+
+          <button id="dispatch-btn" onclick="dispatchAgent()" class="w-full py-2.5 px-4 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white text-xs font-bold rounded-xl transition shadow-lg shadow-brand-500/25 flex items-center justify-center space-x-2">
+            <span>Dispatch Agent Intent</span>
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </button>
+
+          <!-- Live Terminal Output -->
+          <div id="terminal-card" class="hidden bg-slate-950 rounded-xl p-3 border border-white/5 space-y-2 font-mono text-[11px]">
+            <div class="flex items-center justify-between text-slate-400 border-b border-white/5 pb-1">
+              <span>Harness Interceptor Trace</span>
+              <span id="trace-badge" class="px-1.5 py-0.5 rounded text-[10px] font-bold"></span>
+            </div>
+            <div id="terminal-body" class="text-slate-300 space-y-1"></div>
+          </div>
+        </div>
+
+        <!-- Human-in-the-Loop Review Desk -->
+        <div class="glass-card rounded-2xl p-5 border border-white/10 space-y-3">
+          <div class="flex items-center justify-between border-b border-white/5 pb-3">
+            <div class="flex items-center space-x-2">
+              <span class="text-base">🚨</span>
+              <h3 class="font-bold text-sm text-white">HITL Pending Approval Desk</h3>
+            </div>
+            <span id="pending-count-badge" class="text-xs px-2 py-0.5 rounded-full font-mono bg-amber-500/10 text-amber-400 border border-amber-500/20">0 Pending</span>
+          </div>
+
+          <div id="pending-list" class="space-y-3 max-h-72 overflow-y-auto custom-scrollbar">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column (7 cols): Content Queue & Action Log -->
+      <div class="lg:col-span-7 space-y-6">
+
+        <!-- Content Queue Table -->
+        <div class="glass-card rounded-2xl p-5 border border-white/10 space-y-4">
+          <div class="flex items-center justify-between border-b border-white/5 pb-3">
+            <div>
+              <h3 class="font-bold text-sm text-white flex items-center space-x-2">
+                <span>📋 Live Content Queue</span>
+                <span id="queue-count-badge" class="text-xs px-2 py-0.5 rounded-full font-mono bg-slate-800 text-slate-300">0 items</span>
+              </h3>
+            </div>
+            <!-- Quick Add Post -->
+            <button onclick="toggleAddModal()" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-brand-600/20 text-brand-300 border border-brand-500/30 hover:bg-brand-600/30 transition flex items-center space-x-1">
+              <span>+ Add Post</span>
+            </button>
+          </div>
+
+          <!-- Add Post Inline Form -->
+          <div id="add-post-form" class="hidden bg-slate-900/90 rounded-xl p-3 border border-white/10 space-y-2">
+            <input type="text" id="new-post-text" placeholder="Enter post payload content..." class="w-full bg-slate-950 border border-white/10 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-brand-500">
+            <div class="flex justify-end space-x-2">
+              <button onclick="toggleAddModal()" class="text-xs px-3 py-1 text-slate-400 hover:text-white">Cancel</button>
+              <button onclick="submitNewPost()" class="text-xs px-3 py-1 bg-brand-600 hover:bg-brand-500 text-white rounded-lg font-bold">Create Post</button>
+            </div>
+          </div>
+
+          <!-- Table Container -->
+          <div class="overflow-x-auto rounded-xl border border-white/5 max-h-72 overflow-y-auto custom-scrollbar">
+            <table class="w-full text-left text-xs text-slate-300">
+              <thead class="bg-slate-900/90 text-slate-400 font-semibold uppercase text-[10px] tracking-wider sticky top-0 border-b border-white/10">
+                <tr>
+                  <th class="py-2.5 px-3">ID</th>
+                  <th class="py-2.5 px-3">Status</th>
+                  <th class="py-2.5 px-3">Content Payload</th>
+                </tr>
+              </thead>
+              <tbody id="queue-table-body" class="divide-y divide-white/5 font-mono text-[11px]">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Append-Only Action Log & Time Machine -->
+        <div class="glass-card rounded-2xl p-5 border border-white/10 space-y-4">
+          <div class="flex items-center justify-between border-b border-white/5 pb-3">
+            <div>
+              <h3 class="font-bold text-sm text-white flex items-center space-x-2">
+                <span>⏪ Action Log & State Time Machine</span>
+              </h3>
+              <p class="text-[11px] text-slate-400">Append-only audit trail capturing raw state before/after mutations. Click "Restore" to trigger deterministic rollback & apply trust penalty.</p>
+            </div>
+          </div>
+
+          <div id="logs-list" class="space-y-2.5 max-h-72 overflow-y-auto custom-scrollbar">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <footer class="border-t border-white/5 py-4 text-center text-xs text-slate-500 font-mono">
+    TrustRevert Architectural Guardrail Harness • Verified PostgreSQL Persistence • Deterministic Rollbacks
+  </footer>
+
+  <script>
+    let queueItems = [];
+    let trustScores = [];
+    let pendingActions = [];
+    let actionLogs = [];
+    let trustThreshold = 3;
+
+    function setPrompt(txt) {
+      document.getElementById('agent-prompt').value = txt;
+    }
+
+    function toggleAddModal() {
+      const f = document.getElementById('add-post-form');
+      f.classList.toggle('hidden');
+    }
+
+    async function submitNewPost() {
+      const txt = document.getElementById('new-post-text').value.trim();
+      if (!txt) return;
+      try {
+        await fetch('/api/queue', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ content_text: txt, status: 'PENDING' })
+        });
+        document.getElementById('new-post-text').value = '';
+        toggleAddModal();
+        refreshAll();
+      } catch (e) {
+        alert('Failed to add post: ' + e);
+      }
+    }
+
+    async function refreshAll() {
+      const icon = document.getElementById('refresh-icon');
+      icon.classList.add('animate-spin');
+      try {
+        await Promise.all([
+          fetchQueue(),
+          fetchTrust(),
+          fetchPending(),
+          fetchLogs(),
+          fetchHealth()
+        ]);
+      } finally {
+        icon.classList.remove('animate-spin');
+      }
+    }
+
+    async function fetchHealth() {
+      try {
+        const res = await fetch('/health');
+        const data = await res.json();
+        trustThreshold = data.trust_threshold || 3;
+        document.getElementById('threshold-val').textContent = trustThreshold;
+      } catch(e) {}
+    }
+
+    async function fetchTrust() {
+      try {
+        const res = await fetch('/api/trust');
+        trustScores = await res.json();
+        renderTrust();
+      } catch (e) {}
+    }
+
+    function renderTrust() {
+      const container = document.getElementById('trust-cards-container');
+      container.innerHTML = '';
+
+      trustScores.forEach(t => {
+        const isGraduated = t.success_count >= trustThreshold;
+        const pct = Math.min(100, Math.round((t.success_count / trustThreshold) * 100));
+        const color = isGraduated ? 'emerald' : (t.action_type === 'purge' ? 'rose' : 'indigo');
+
+        const card = document.createElement('div');
+        card.className = 'glass-card rounded-2xl p-4 border border-white/5 relative overflow-hidden';
+        card.innerHTML = `
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-mono font-bold text-sm text-white uppercase">${t.action_type}</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+              isGraduated 
+                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
+                : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+            }">
+              ${isGraduated ? '🎓 Autonomous' : '🔒 Supervised'}
+            </span>
+          </div>
+
+          <div class="flex items-baseline justify-between text-xs mb-1.5">
+            <span class="text-slate-400">Trust Score</span>
+            <span class="font-mono font-bold text-${color}-400">${t.success_count} / ${trustThreshold} clean runs</span>
+          </div>
+
+          <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-white/5">
+            <div class="bg-gradient-to-r from-${color}-500 to-${color}-400 h-2 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+          </div>
+          <p class="text-[10px] text-slate-500 mt-2">${
+            isGraduated 
+              ? 'Tool executes autonomously without human intervention.' 
+              : 'Gated: Every call halts & requires explicit human approval.'
+          }</p>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    async function fetchQueue() {
+      try {
+        const res = await fetch('/api/queue');
+        queueItems = await res.json();
+        renderQueue();
+        populateTargetSelect();
+      } catch (e) {}
+    }
+
+    function renderQueue() {
+      const tbody = document.getElementById('queue-table-body');
+      document.getElementById('queue-count-badge').textContent = `${queueItems.length} items`;
+      tbody.innerHTML = '';
+
+      if (queueItems.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3" class="text-center py-6 text-slate-500 italic">No queue items found. Click "+ Add Post" to seed data.</td></tr>`;
+        return;
+      }
+
+      queueItems.forEach(item => {
+        let statusBadge = '';
+        if (item.status === 'PENDING') {
+          statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">PENDING</span>`;
+        } else if (item.status === 'POSTED') {
+          statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">POSTED</span>`;
+        } else if (item.status === 'FAILED') {
+          statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">FAILED</span>`;
+        } else {
+          statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-400 border border-white/5 line-through">PURGED</span>`;
+        }
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-white/[0.02] transition';
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 font-bold text-white">#${item.id}</td>
+          <td class="py-2.5 px-3">${statusBadge}</td>
+          <td class="py-2.5 px-3 text-slate-300 font-sans max-w-xs truncate">${item.content_text}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function populateTargetSelect() {
+      const sel = document.getElementById('agent-target-id');
+      const prevVal = sel.value;
+      sel.innerHTML = '';
+
+      queueItems.forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item.id;
+        opt.textContent = `ID #${item.id} (${item.status})`;
+        sel.appendChild(opt);
+      });
+
+      if (prevVal && queueItems.some(i => i.id == prevVal)) {
+        sel.value = prevVal;
+      }
+      updateTargetPreview();
+      sel.onchange = updateTargetPreview;
+    }
+
+    function updateTargetPreview() {
+      const sel = document.getElementById('agent-target-id');
+      const preview = document.getElementById('target-preview-text');
+      const item = queueItems.find(i => i.id == sel.value);
+      if (item) {
+        preview.textContent = `"${item.content_text}" [${item.status}]`;
+      } else {
+        preview.textContent = 'No item selected';
+      }
+    }
+
+    async function fetchPending() {
+      try {
+        const res = await fetch('/api/hitl/pending');
+        pendingActions = await res.json();
+        renderPending();
+      } catch (e) {}
+    }
+
+    function renderPending() {
+      const list = document.getElementById('pending-list');
+      const badge = document.getElementById('pending-count-badge');
+      badge.textContent = `${pendingActions.length} Pending`;
+      list.innerHTML = '';
+
+      if (pendingActions.length === 0) {
+        list.innerHTML = `
+          <div class="text-center py-6 text-slate-500 text-xs border border-dashed border-white/5 rounded-xl">
+            ✨ No pending approvals. Structural harness is idle.
+          </div>
+        `;
+        return;
+      }
+
+      pendingActions.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'bg-slate-900/90 rounded-xl p-3 border border-amber-500/30 space-y-2';
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+              <span class="font-mono font-bold text-xs text-white uppercase">${p.action_type}</span>
+              <span class="text-xs text-slate-400">on Target #${p.target_id}</span>
+            </div>
+            <span class="text-[10px] font-mono text-slate-500">${p.intent_id.substring(0, 8)}...</span>
+          </div>
+          <p class="text-xs text-slate-300 font-sans italic bg-black/30 p-2 rounded border border-white/5">${p.reason || 'No reason provided'}</p>
+          <div class="flex items-center justify-end space-x-2 pt-1">
+            <button onclick="rejectPending('${p.intent_id}')" class="px-2.5 py-1 text-xs text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition">
+              Reject
+            </button>
+            <button onclick="approvePending('${p.intent_id}')" class="px-3 py-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold rounded-lg transition shadow-md shadow-emerald-500/20 flex items-center space-x-1">
+              <span>Approve & Execute (+1 Trust)</span>
+            </button>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    async function approvePending(intentId) {
+      try {
+        const res = await fetch(`/api/hitl/approve/${intentId}`, { method: 'POST' });
+        const data = await res.json();
+        if (res.ok) {
+          refreshAll();
+        } else {
+          alert('Approval error: ' + data.detail);
+        }
+      } catch (e) {
+        alert('Request failed: ' + e);
+      }
+    }
+
+    async function rejectPending(intentId) {
+      try {
+        await fetch(`/api/hitl/reject/${intentId}`, { method: 'POST' });
+        refreshAll();
+      } catch (e) {
+        alert('Request failed: ' + e);
+      }
+    }
+
+    async function fetchLogs() {
+      try {
+        const res = await fetch('/api/logs');
+        actionLogs = await res.json();
+        renderLogs();
+      } catch (e) {}
+    }
+
+    function renderLogs() {
+      const container = document.getElementById('logs-list');
+      container.innerHTML = '';
+
+      if (actionLogs.length === 0) {
+        container.innerHTML = `<div class="text-center py-6 text-slate-500 text-xs italic">No actions recorded in append-only log yet.</div>`;
+        return;
+      }
+
+      actionLogs.forEach(log => {
+        const isRollback = log.action_type.startsWith('rollback_');
+        const card = document.createElement('div');
+        card.className = `p-3 rounded-xl border text-xs font-mono transition ${
+          isRollback ? 'bg-indigo-950/20 border-indigo-500/20' : 'bg-slate-900/60 border-white/5 hover:border-white/10'
+        }`;
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between mb-1.5">
+            <div class="flex items-center space-x-2">
+              <span class="font-bold ${isRollback ? 'text-indigo-400' : 'text-white'}">${log.action_type}</span>
+              <span class="text-slate-500">Target #${log.target_row_id}</span>
+            </div>
+            <span class="text-[10px] text-slate-500">${log.executed_at ? new Date(log.executed_at).toLocaleTimeString() : ''}</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-[11px] bg-black/40 p-2 rounded border border-white/5 mb-2">
+            <div>
+              <span class="text-slate-500 block text-[10px]">PREVIOUS STATE:</span>
+              <span class="text-amber-300">${log.previous_state ? JSON.stringify(log.previous_state.status || log.previous_state) : 'null'}</span>
+            </div>
+            <div>
+              <span class="text-slate-500 block text-[10px]">NEW STATE:</span>
+              <span class="text-emerald-300">${log.new_state ? JSON.stringify(log.new_state.status || log.new_state) : 'null'}</span>
+            </div>
+          </div>
+
+          ${
+            !isRollback 
+              ? `<div class="flex justify-end">
+                   <button onclick="restoreAction('${log.action_id}')" class="px-2.5 py-1 bg-white/5 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded-lg text-[10px] font-bold transition flex items-center space-x-1">
+                     <span>⏪ Restore Prior State (-1 Trust)</span>
+                   </button>
+                 </div>`
+              : `<div class="text-[10px] text-indigo-400 italic">Rollback event executed. Prior state restored.</div>`
+          }
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    async function restoreAction(actionId) {
+      if (!confirm('Reverting this action will overwrite the target row with previous_state and decrement trust by 1. Proceed?')) {
+        return;
+      }
+      try {
+        const res = await fetch('/api/system/restore', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ action_id: actionId })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          refreshAll();
+        } else {
+          alert('Restore failed: ' + data.detail);
+        }
+      } catch (e) {
+        alert('Restore request failed: ' + e);
+      }
+    }
+
+    async function dispatchAgent() {
+      const prompt = document.getElementById('agent-prompt').value.trim();
+      const targetId = parseInt(document.getElementById('agent-target-id').value);
+      const btn = document.getElementById('dispatch-btn');
+      const term = document.getElementById('terminal-card');
+      const termBody = document.getElementById('terminal-body');
+      const traceBadge = document.getElementById('trace-badge');
+
+      if (!prompt || isNaN(targetId)) {
+        alert('Please enter a prompt and select a target row ID.');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.classList.add('opacity-50');
+
+      try {
+        const res = await fetch('/api/agent/execute', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ prompt, target_id: targetId })
+        });
+
+        const data = await res.json();
+        term.classList.remove('hidden');
+
+        if (res.ok) {
+          const isPaused = data.status === 'paused';
+          traceBadge.textContent = isPaused ? 'HALTED (HITL GATED)' : 'AUTONOMOUS EXECUTION';
+          traceBadge.className = `px-1.5 py-0.5 rounded text-[10px] font-bold ${
+            isPaused ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+          }`;
+
+          termBody.innerHTML = `
+            <div><span class="text-slate-500">&gt; Prompt:</span> "${prompt}"</div>
+            <div><span class="text-slate-500">&gt; Formulated Tool:</span> <span class="text-brand-300">${data.action_name || 'unknown'}</span> on Target #${targetId}</div>
+            <div><span class="text-slate-500">&gt; Harness Decision:</span> <span class="${isPaused ? 'text-amber-400 font-bold' : 'text-emerald-400 font-bold'}">${data.message}</span></div>
+            ${data.intent_id ? `<div><span class="text-slate-500">&gt; Staged Intent ID:</span> ${data.intent_id}</div>` : ''}
+            ${data.action_id ? `<div><span class="text-slate-500">&gt; Action Log ID:</span> ${data.action_id}</div>` : ''}
+          `;
+          refreshAll();
+        } else {
+          traceBadge.textContent = 'VALIDATION ERROR';
+          traceBadge.className = 'px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30';
+          termBody.innerHTML = `<div><span class="text-rose-400">&gt; Error (${res.status}):</span> ${data.detail || 'Request failed'}</div>`;
+        }
+      } catch (e) {
+        alert('Dispatch error: ' + e);
+      } finally {
+        btn.disabled = false;
+        btn.classList.remove('opacity-50');
+      }
+    }
+
+    // Initial load and periodic refresh
+    refreshAll();
+    setInterval(refreshAll, 4000);
+  </script>
+</body>
+</html>

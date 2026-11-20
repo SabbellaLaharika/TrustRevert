@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     API_PORT: int = 8000
     MOCK_LLM_ENABLED: bool = True
     TESTING: bool = False
+    TRACES_FILE: str = "traces.jsonl"
 
     model_config = SettingsConfigDict(
         env_file=".env",

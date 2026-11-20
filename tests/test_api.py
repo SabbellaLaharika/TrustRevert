@@ -48,14 +48,15 @@ def test_db():
 @pytest.fixture
 def client(test_db):
     def override_get_db():
+        db = TestingSessionLocal()
         try:
-            yield test_db
+            yield db
         finally:
-            pass
+            db.close()
 
     app.dependency_overrides[get_db] = override_get_db
-    with TestClient(app) as c:
-        yield c
+    c = TestClient(app)
+    yield c
     app.dependency_overrides.clear()
 
 
@@ -156,15 +157,16 @@ def test_core_req_5_autonomous_graduation(client, test_db, monkeypatch):
     purge_trust.success_count = 2
     test_db.commit()
 
-    # Seed row with specific target
-    item = ContentQueue(id=999, content_text="Graduated item", status=QueueStatus.PENDING)
+    # Seed row dynamically
+    item = ContentQueue(content_text="Graduated item", status=QueueStatus.PENDING)
     test_db.add(item)
     test_db.commit()
+    test_db.refresh(item)
 
     # Send execute request
     response = client.post("/api/agent/execute", json={
         "prompt": "Purge item immediately",
-        "target_id": 999
+        "target_id": item.id
     })
 
     assert response.status_code == 200
@@ -173,7 +175,7 @@ def test_core_req_5_autonomous_graduation(client, test_db, monkeypatch):
     assert data["status"] == "executed"
     assert data["action_id"] is not None
 
-    # Verify ID 999 was mutated to PURGED
+    # Verify item was mutated to PURGED
     test_db.refresh(item)
     assert item.status == QueueStatus.PURGED
 
